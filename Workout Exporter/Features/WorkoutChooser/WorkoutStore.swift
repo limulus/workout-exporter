@@ -9,9 +9,7 @@
 import HealthKit
 import CoreLocation
 
-class HealthKitManager {
-    static let shared = HealthKitManager()
-    
+class WorkoutStore {
     let healthStore = HKHealthStore()
     
     func requestAuthorization() async throws {

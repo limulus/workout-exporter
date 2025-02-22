@@ -9,6 +9,8 @@ import HealthKit
 
 @MainActor
 class WorkoutChooserViewModel: ObservableObject {
+    private let workoutStore = WorkoutStore()
+    
     @Published private(set) var workouts: [HKWorkout] = []
     @Published private(set)var error: String?
     @Published private(set) var isLoading = false
@@ -24,7 +26,7 @@ class WorkoutChooserViewModel: ObservableObject {
         error = nil
         
         do {
-            let workouts = try await HealthKitManager.shared.fetchWorkouts()
+            let workouts = try await workoutStore.fetchWorkouts()
             self.workouts = workouts
         } catch {
             self.error = "Failed to load workouts: \(error.localizedDescription)"
