@@ -5,27 +5,11 @@
 //  Created by Eric McCarthy on 2/15/25.
 //
 
-
 import HealthKit
 import CoreLocation
 
 class WorkoutStore {
-    let healthStore = HKHealthStore()
-    
-    func requestAuthorization() async throws {
-        guard HKHealthStore.isHealthDataAvailable() else {
-            throw HealthKitManagerError.deviceNotCapable
-        }
-        
-        // Define the types you want to read:
-        let workoutType = HKObjectType.workoutType()
-        let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate)!
-        let workoutRouteType = HKSeriesType.workoutRoute() // For location data
-        
-        let typesToRead: Set<HKObjectType> = [workoutType, heartRateType, workoutRouteType]
-        
-        try await healthStore.requestAuthorization(toShare: [], read: typesToRead)
-    }
+    private let healthStore = HealthKitManager.shared.healthStore
     
     func fetchWorkouts() async throws -> [HKWorkout] {
         let workoutQuery = HKSampleQueryDescriptor(
@@ -39,6 +23,3 @@ class WorkoutStore {
     }
 }
 
-enum HealthKitManagerError: Error {
-    case deviceNotCapable
-}
