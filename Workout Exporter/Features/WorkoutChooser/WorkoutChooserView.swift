@@ -26,7 +26,7 @@ struct WorkoutChooserView: View {
                         }
                     }
                 } else if viewModel.workouts.isEmpty {
-                    Text("0 Workouts")
+                    Text("No Workouts")
                         .foregroundStyle(.secondary)
                 } else {
                     List(viewModel.workouts, id: \.uuid) { workout in

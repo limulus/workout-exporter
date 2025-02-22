@@ -23,7 +23,7 @@ struct ExportListView: View {
                     }
                 }
             } else if viewModel.exports.isEmpty {
-                Text("0 Exports")
+                Text("No Exports")
                     .foregroundStyle(.secondary)
             } else {
                 List {
