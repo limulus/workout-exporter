@@ -26,6 +26,7 @@ class WorkoutChooserViewModel: ObservableObject {
         error = nil
         
         do {
+            try await HealthKitManager.shared.requestAuthorization()
             let workouts = try await workoutStore.fetchWorkouts()
             self.workouts = workouts
         } catch {
