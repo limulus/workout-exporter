@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct WorkoutExporterView: View {
-    @State private var showWorkoutChooserSheet = false
     @ObservedObject private var viewModel = WorkoutExporterViewModel()
+    
+    @State private var showWorkoutChooserSheet = false
+    @State private var showErrorAlert = false
+    @State private var error: Error?
     
     var body: some View {
         VStack {
@@ -22,8 +25,21 @@ struct WorkoutExporterView: View {
         }
         .sheet(isPresented: $showWorkoutChooserSheet) {
             WorkoutChooserView { workout in
-                viewModel.handleWorkoutSelection(workout)
-                showWorkoutChooserSheet = false
+                Task {
+                    do {
+                        try await viewModel.handleWorkoutSelection(workout)
+                        showWorkoutChooserSheet = false
+                    } catch (let err) {
+                        self.error = err
+                    }
+                }
+            }
+        }
+        .alert("Error", isPresented: $showErrorAlert) {
+            Text(error?.localizedDescription ?? "An unknown error occurred.")
+            Button("OK") {
+                showErrorAlert = false
+                error = nil
             }
         }
     }

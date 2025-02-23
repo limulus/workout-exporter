@@ -7,10 +7,30 @@
 
 import Foundation
 
-struct ExportStore {
-    private let fileManager = FileManager.default
+struct ExportRef: Identifiable {
+    let name: String
+    private let url: URL
     
-    func saveExport(export: Export) throws {
+    public var id: String { url.absoluteString }
+    
+    init(name: String, url: URL) {
+        self.name = name
+        self.url = url
+    }
+
+    func load() throws -> Export {
+        try Export.load(from: url)
+    }
+}
+
+class ExportStore: ObservableObject {
+    static let shared = ExportStore()
+    
+    @Published var exports: [ExportRef] = []
+    
+    private let fileManager = FileManager.default
+        
+    func saveExport(_ export: Export) throws {
         guard let documentsPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             throw ExportError.documentsDirectoryNotFound
         }
@@ -36,9 +56,13 @@ struct ExportStore {
         let fileURL = exportsDirectory.appendingPathComponent(filename)
         
         try export.save(to: fileURL)
+        
+        DispatchQueue.main.async {
+            self.exports.insert(ExportRef(name: timestamp, url: fileURL), at: 0)
+        }
     }
     
-    func fetchExports() throws -> [Export] {
+    func fetchExports() throws {
         guard let documentsPath = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
             throw ExportError.documentsDirectoryNotFound
         }
@@ -47,7 +71,8 @@ struct ExportStore {
         
         // Return empty array if directory doesn't exist yet
         guard fileManager.fileExists(atPath: exportsDirectory.path) else {
-            return []
+            exports = []
+            return
         }
         
         // Get all files in directory
@@ -57,15 +82,18 @@ struct ExportStore {
             options: .skipsHiddenFiles
         )
         
-        // Sort URLs by filename (newest first) and then load exports
-        let exports = try fileURLs
+        // Sort URLs by filename (newest first) and create ExportRefs
+        let newExports = fileURLs
             .filter { $0.pathExtension == "json" }
             .sorted { $0.lastPathComponent > $1.lastPathComponent }
-            .compactMap { url -> Export? in
-                try Export.load(from: url)
+            .map { url in
+                let name = url.deletingPathExtension().lastPathComponent
+                return ExportRef(name: name, url: url)
             }
         
-        return exports
+        DispatchQueue.main.async {
+            self.exports = newExports
+        }
     }
 }
 

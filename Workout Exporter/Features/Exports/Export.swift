@@ -6,28 +6,33 @@
 //
 
 import Foundation
+import HealthKit
 
 struct Export: Identifiable, Codable {
     let id: UUID
-    let name: String
     let status: ExportStatus
     let workoutIds: [UUID]
     let date: Date
-    let fileName: String
-    let failureReason: String?
+    let data: String?
     
-    init(id: UUID = UUID(), name: String, status: ExportStatus, workoutIds: [UUID], date: Date, fileName: String, failureReason: String? = nil) {
+    init(id: UUID = UUID(), status: ExportStatus, workoutIds: [UUID], date: Date, data: String? = nil) {
         self.id = id
-        self.name = name
         self.status = status
         self.workoutIds = workoutIds
         self.date = date
-        self.fileName = fileName
-        self.failureReason = failureReason
+        self.data = data
     }
     
-    func updateStatus(status: ExportStatus) -> Export {
-        return Export(name: name, status: status, workoutIds: workoutIds, date: date, fileName: fileName, failureReason: failureReason)
+    // MARK: - Conversion
+    
+    static func fromHealthKitWorkouts(_ workouts: [HKWorkout]) async -> Export {
+        return Export(
+            id: UUID(),
+            status: .completed,
+            workoutIds: workouts.map(\.uuid),
+            date: Date(),
+            data: await TCXConverter.shared.convertWorkouts(workouts)
+        )
     }
     
     // MARK: - Coding Methods
@@ -44,13 +49,11 @@ struct Export: Identifiable, Codable {
         return try decoder.decode(Export.self, from: data)
     }
     
-    // Convenience method to load from file
     static func load(from url: URL) throws -> Export {
         let data = try Data(contentsOf: url)
         return try decode(from: data)
     }
     
-    // Convenience method to save to file
     func save(to url: URL) throws {
         let data = try encode()
         try data.write(to: url, options: [.atomic, .completeFileProtection])
@@ -58,7 +61,6 @@ struct Export: Identifiable, Codable {
 }
 
 enum ExportStatus: Codable {
-    case inProgress
+    case failed(reason: String)
     case completed
-    case failed
 }

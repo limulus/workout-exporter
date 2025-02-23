@@ -9,14 +9,12 @@ import SwiftUI
 
 @MainActor
 class ExportListViewModel: ObservableObject {
-    @Published private(set) var exports: [Export] = []
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
     
-    private let exportStore = ExportStore()
-    
     init() {
         Task {
+            print("loading exports...")
             await loadExports()
         }
     }
@@ -26,7 +24,7 @@ class ExportListViewModel: ObservableObject {
         error = nil
         
         do {
-            exports = try exportStore.fetchExports()
+            try ExportStore.shared.fetchExports()
         } catch {
             self.error = "Failed to load exports: \(error.localizedDescription)"
         }
@@ -39,7 +37,7 @@ class ExportListViewModel: ObservableObject {
             await loadExports()
         }
     }
-    
+        
     func deleteExport(at indexSet: IndexSet) {
         // TODO: Implement delete functionality in ExportStore
     }
