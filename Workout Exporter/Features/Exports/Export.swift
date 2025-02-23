@@ -25,13 +25,13 @@ struct Export: Identifiable, Codable {
     
     // MARK: - Conversion
     
-    static func fromHealthKitWorkouts(_ workouts: [HKWorkout]) async -> Export {
+    static func fromHealthKitWorkouts(_ workouts: [HKWorkout]) async throws -> Export {
         return Export(
             id: UUID(),
             status: .completed,
             workoutIds: workouts.map(\.uuid),
             date: Date(),
-            data: await TCXConverter.shared.convertWorkouts(workouts)
+            data: try await TCXConverter.shared.convertWorkouts(workouts)
         )
     }
     

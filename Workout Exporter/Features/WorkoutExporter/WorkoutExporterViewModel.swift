@@ -10,6 +10,6 @@ import HealthKit
 
 class WorkoutExporterViewModel: ObservableObject {
     func handleWorkoutSelection(_ workout: HKWorkout) async throws {
-        try ExportStore.shared.saveExport(await .fromHealthKitWorkouts([workout]))
+        try ExportStore.shared.saveExport(try await .fromHealthKitWorkouts([workout]))
     }
 }

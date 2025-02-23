@@ -21,8 +21,22 @@ class HealthKitManager {
         try await healthStore.requestAuthorization(toShare: [], read: [
             HKObjectType.workoutType(),
             HKObjectType.quantityType(forIdentifier: .heartRate)!,
+            HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+            HKObjectType.quantityType(forIdentifier: .distanceCycling)!,
             HKSeriesType.workoutRoute(),
         ])
+    }
+    
+    func query(quantityType: HKQuantityType, for activity: HKWorkoutActivity) -> HKQuantitySeriesSampleQueryDescriptor.Results {
+        let predicate = HKSamplePredicate.quantitySample(
+            type: quantityType,
+            predicate: HKQuery.predicateForSamples(withStart: activity.startDate, end: activity.endDate)
+        )
+        let seriesDescriptor = HKQuantitySeriesSampleQueryDescriptor(
+            predicate: predicate,
+            options: .orderByQuantitySampleStartDate
+        )
+        return seriesDescriptor.results(for: healthStore)
     }
 }
 
