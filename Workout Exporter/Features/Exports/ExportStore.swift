@@ -9,7 +9,7 @@ import Foundation
 
 struct ExportRef: Identifiable {
     let name: String
-    private let url: URL
+    let url: URL
     
     public var id: String { url.absoluteString }
     
@@ -93,6 +93,18 @@ class ExportStore: ObservableObject {
         
         DispatchQueue.main.async {
             self.exports = newExports
+        }
+    }
+    
+    func deleteExport(_ export: ExportRef) {
+        do {
+            try fileManager.removeItem(at: export.url)
+            
+            DispatchQueue.main.async {
+                self.exports.removeAll { $0.id == export.id }
+            }
+        } catch {
+            print("Error deleting export: \(error.localizedDescription)")
         }
     }
 }

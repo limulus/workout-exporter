@@ -37,6 +37,13 @@ struct ExportListView: View {
                     ) {
                         ExportRowView(export: export)
                     }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            viewModel.deleteExport(export)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
             }
         }

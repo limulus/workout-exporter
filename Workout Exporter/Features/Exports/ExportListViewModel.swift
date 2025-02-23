@@ -38,7 +38,7 @@ class ExportListViewModel: ObservableObject {
         }
     }
         
-    func deleteExport(at indexSet: IndexSet) {
-        // TODO: Implement delete functionality in ExportStore
+    func deleteExport(_ export: ExportRef) {
+        ExportStore.shared.deleteExport(export)
     }
 }
