@@ -27,6 +27,17 @@ class HealthKitManager {
         ])
     }
     
+    func fetchWorkouts() async throws -> [HKWorkout] {
+        let workoutQuery = HKSampleQueryDescriptor(
+            predicates: [.workout()],
+            sortDescriptors: [SortDescriptor(\.endDate, order: .reverse)],
+            limit: 100
+        )
+
+        let workouts = try await workoutQuery.result(for: healthStore)
+        return workouts
+    }
+    
     func query(quantityType: HKQuantityType, for activity: HKWorkoutActivity) -> HKQuantitySeriesSampleQueryDescriptor.Results {
         let predicate = HKSamplePredicate.quantitySample(
             type: quantityType,
