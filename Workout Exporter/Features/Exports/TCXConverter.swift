@@ -19,7 +19,7 @@ struct TCXConverter {
         <?xml version="1.0" encoding="UTF-8"?>
         <TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2">
             <Activities>
-                \(formatActivities(activities))
+                \(activities.map({ formatActivity($0) }).joined(separator: "\n"))
             </Activities>
         </TrainingCenterDatabase>
         """
@@ -27,15 +27,13 @@ struct TCXConverter {
         return xmlString
     }
     
-    private func formatActivities(_ activities: [HKWorkoutActivity]) -> String {
-        return activities.map { activity in
-            """
-            <Activity Sport="\(mapActivityType(activity.workoutConfiguration.activityType))">
-                <Id>\(activity.uuid)</Id>
-                <!-- TK -->
-            </Activity>
-            """
-        }.joined(separator: "\n")
+    private func formatActivity(_ activity: HKWorkoutActivity) -> String {
+        return """
+        <Activity Sport="\(mapActivityType(activity.workoutConfiguration.activityType))">
+            <Id>\(activity.uuid)</Id>
+            <!-- TK -->
+        </Activity>
+        """
     }
     
     private func mapActivityType(_ type: HKWorkoutActivityType) -> String {
