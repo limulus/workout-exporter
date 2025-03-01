@@ -90,11 +90,11 @@ struct TCXConverter {
     
     private func formatTrackpoints(for activity: HKWorkoutActivity) async throws -> String {
         var trackpointsXml: [String] = []
-        for try await sample in HealthKitManager.shared.query(quantityType: HKQuantityType(.heartRate), for: activity) {
-            let heartRate = Int(sample.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute())))
+        for try await result in HealthKitManager.shared.query(quantityType: HKQuantityType(.heartRate), for: activity) {
+            let heartRate = Int(result.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute())))
             trackpointsXml.append("""
                 <Trackpoint>
-                    <Time>\(sample.dateInterval.start.formatted(.iso8601))</Time>
+                    <Time>\(result.dateInterval.start.formatted(.iso8601))</Time>
                     <HeartRateBpm>
                         <Value>\(heartRate)</Value>
                     </HeartRateBpm>
