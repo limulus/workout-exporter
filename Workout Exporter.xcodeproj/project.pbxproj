@@ -27,6 +27,7 @@
 		0713461B2D61384500376351 /* Workout Exporter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Workout Exporter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0713462B2D61384600376351 /* Workout ExporterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Workout ExporterTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		071346352D61384600376351 /* Workout ExporterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Workout ExporterUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0781077B2D73553300A2E980 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -79,6 +80,7 @@
 				0713462E2D61384600376351 /* Workout ExporterTests */,
 				071346382D61384600376351 /* Workout ExporterUITests */,
 				0713461C2D61384500376351 /* Products */,
+				0781077B2D73553300A2E980 /* CLAUDE.md */,
 			);
 			sourceTree = "<group>";
 		};
