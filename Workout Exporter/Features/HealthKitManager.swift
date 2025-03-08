@@ -60,10 +60,8 @@ class HealthKitManager {
     }
     
     func getWorkoutRoute(for workout: HKWorkout) async throws -> [CLLocation] {
-        // First query for route objects associated with the workout
         let workoutPredicate = HKQuery.predicateForObjects(from: workout)
         let routeType = HKSeriesType.workoutRoute()
-        
         let routeQuery = HKSampleQueryDescriptor(
             predicates: [.sample(type: routeType, predicate: workoutPredicate)],
             sortDescriptors: [SortDescriptor(\.startDate, order: .forward)]
@@ -71,13 +69,11 @@ class HealthKitManager {
         
         let samples = try await routeQuery.result(for: healthStore)
         let routes = samples.compactMap { $0 as? HKWorkoutRoute }
-        
-        // If no routes found, return empty array
         guard let route = routes.first else {
             return []
         }
         
-        // Create a query for the route's location data
+        var allLocations = [CLLocation]()
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKWorkoutRouteQuery(route: route) { query, locations, done, error in
                 if let error = error {
@@ -85,18 +81,12 @@ class HealthKitManager {
                     return
                 }
                 
-                // If locations exist, add them to our array
                 if let locations = locations, !locations.isEmpty {
-                    var allLocations = [CLLocation]()
                     allLocations.append(contentsOf: locations)
-                    
-                    // If we're done, return the result
-                    if done {
-                        continuation.resume(returning: allLocations)
-                    }
-                } else if done {
-                    // No more locations, return what we have
-                    continuation.resume(returning: [])
+                }
+                
+                if done {
+                    continuation.resume(returning: allLocations)
                 }
             }
             
