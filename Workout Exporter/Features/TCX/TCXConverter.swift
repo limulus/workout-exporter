@@ -6,16 +6,20 @@
 //
 
 import HealthKit
+import CoreLocation
+import Foundation
 
-struct TCXConverter {
-    public static let shared = TCXConverter()
+struct WorkoutTCXGenerator {
+    public static let shared = WorkoutTCXGenerator()
     
     private let healthStore = HealthKitManager.shared.healthStore
     
     func convertWorkouts(_ workouts: [HKWorkout]) async throws -> String {
+        try await requestAuthorization(for: workouts)
+        
         var activitiesXml: [String] = []
-        for activity in workouts.flatMap(\.workoutActivities) {
-            activitiesXml.append(try await formatActivity(activity))
+        for workout in workouts {
+            activitiesXml.append(try await formatWorkout(workout))
         }
         
         let xmlString = """
@@ -30,22 +34,79 @@ struct TCXConverter {
         return xmlString
     }
     
-    private func formatActivity(_ activity: HKWorkoutActivity) async throws -> String {
-        let startTime = activity.startDate.formatted(.iso8601)
+    func requestAuthorization(for workouts: [HKWorkout]) async throws {
+        var types: Set<HKObjectType> = []
+        for workout in workouts {
+            for type in workout.allStatistics.keys {
+                types.insert(type)
+            }
+            if let type = HealthKitManager.shared.distanceType(for: workout) {
+                types.insert(type)
+            }
+        }
+        try await HealthKitManager.shared.requestAuthorization(for: types)
+    }
+    
+    private func formatWorkout(_ workout: HKWorkout) async throws -> String {
+        let startTime = workout.startDate.formatted(.iso8601)
+        let trackpoints = try await collectTrackpoints(from: workout)
         
         return """
-        <Activity Sport="\(mapActivityType(activity.workoutConfiguration.activityType))">
+        <Activity Sport="\(mapActivityType(workout.workoutActivityType))">
             <Id>\(startTime)</Id>
             <Lap StartTime="\(startTime)">
-                <TotalTimeSeconds>\(activity.duration)</TotalTimeSeconds>
-                <DistanceMeters>\(formatDistance(for: activity))</DistanceMeters>
-                <Calories>\(formatActiveCalories(for: activity))</Calories>
+                <TotalTimeSeconds>\(workout.duration)</TotalTimeSeconds>
+                <DistanceMeters>\(workout.totalDistance?.doubleValue(for: .meter()) ?? 0)</DistanceMeters>
+                <Calories>\(Int(workout.statistics(for: HKQuantityType(.activeEnergyBurned))?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0))</Calories>
                 <Intensity>Active</Intensity>
                 <TriggerMethod>Manual</TriggerMethod>
-                \(try await formatTrackpoints(for: activity))
+                <Track>
+                    \(trackpoints.map { $0.toXML() }.joined(separator: "\n"))
+                </Track>
             </Lap>
         </Activity>
         """
+    }
+    
+    private func collectTrackpoints(from workout: HKWorkout) async throws -> [TrackPoint] {
+        var trackpoints: [TrackPoint] = []
+        
+        // Process all activities in the workout
+        for activity in workout.workoutActivities {
+            // Collect heart rate data (time series data)
+            for try await result in HealthKitManager.shared.query(quantityType: HKQuantityType(.heartRate), for: activity) {
+                let timestamp = result.dateInterval.start
+                let heartRate = Int(result.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute())))
+                
+                let trackpoint = TrackPoint.heartRate(timestamp: timestamp, value: heartRate)
+                trackpoints.append(trackpoint)
+            }
+            
+            if let distanceType = HealthKitManager.shared.distanceType(for: workout) {
+                let samples = try await HealthKitManager.shared.queryDiscreteQuantitySamples(quantityType: distanceType, for: activity)
+                
+                for sample in samples {
+                    let timestamp = sample.startDate
+                    let distance = sample.quantity.doubleValue(for: .meter())
+                    
+                    let trackpoint = TrackPoint.distance(timestamp: timestamp, value: distance)
+                    trackpoints.append(trackpoint)
+                }
+            }
+        }
+        
+        // Add location data from workout routes
+        let locations = try await HealthKitManager.shared.getWorkoutRoute(for: workout)
+        
+        print("locations: \(locations)")
+        
+        for location in locations {
+            let trackpoint = TrackPoint.position(timestamp: location.timestamp, coordinate: location.coordinate)
+            trackpoints.append(trackpoint)
+        }
+        
+        // Sort trackpoints by timestamp
+        return trackpoints.sorted { $0.timestamp < $1.timestamp }
     }
     
     private func mapActivityType(_ type: HKWorkoutActivityType) -> String {
@@ -58,53 +119,7 @@ struct TCXConverter {
             return "Other"
         }
     }
-    
-    private func formatDistance(for activity: HKWorkoutActivity) -> Double {
-        let distanceTypes = [
-            HKQuantityType(.distanceWalkingRunning),
-            HKQuantityType(.distanceCycling),
-            HKQuantityType(.distanceSwimming),
-            HKQuantityType(.distanceWheelchair),
-            HKQuantityType(.distanceRowing),
-            HKQuantityType(.distancePaddleSports),
-            HKQuantityType(.distanceSkatingSports),
-            HKQuantityType(.distanceCrossCountrySkiing),
-            HKQuantityType(.distanceDownhillSnowSports),
-            HKQuantityType(.sixMinuteWalkTestDistance)
-        ]
-        
-        for type in distanceTypes {
-            if let statistics = activity.statistics(for: type) {
-                return statistics.sumQuantity()?.doubleValue(for: .meter()) ?? 0
-            }
-        }
-        
-        return 0
-    }
-    
-    private func formatActiveCalories(for activity: HKWorkoutActivity) -> UInt16 {
-        guard let statistics = activity.statistics(for: HKQuantityType(.activeEnergyBurned)) else { return 0 }
-        guard let calories = statistics.sumQuantity()?.doubleValue(for: .largeCalorie()) else { return 0 }
-        return UInt16(min(calories, Double(UInt16.max)))
-    }
-    
-    private func formatTrackpoints(for activity: HKWorkoutActivity) async throws -> String {
-        var trackpointsXml: [String] = []
-        for try await result in HealthKitManager.shared.query(quantityType: HKQuantityType(.heartRate), for: activity) {
-            let heartRate = Int(result.quantity.doubleValue(for: HKUnit.count().unitDivided(by: .minute())))
-            trackpointsXml.append("""
-                <Trackpoint>
-                    <Time>\(result.dateInterval.start.formatted(.iso8601))</Time>
-                    <HeartRateBpm>
-                        <Value>\(heartRate)</Value>
-                    </HeartRateBpm>
-                </Trackpoint>
-             """)
-        }
-        return """
-            <Track>
-                \(trackpointsXml.joined(separator: "\n"))
-            </Track>
-        """
-    }
 }
+
+// Keep old name for backward compatibility
+typealias TCXConverter = WorkoutTCXGenerator
