@@ -24,11 +24,13 @@ struct WorkoutTCXGenerator {
         
         let xmlString = """
         <?xml version="1.0" encoding="UTF-8"?>
-        <TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" 
-                              xmlns:ldn="https://limulus.net/xmlschemas/tcx-extensions/v1">
-            <Activities>
-                \(activitiesXml.joined(separator: "\n"))
-            </Activities>
+        <TrainingCenterDatabase
+          xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" 
+          xmlns:ldn="https://limulus.net/xmlschemas/tcx-extensions/v1"
+        >
+        <Activities>
+          \(activitiesXml.joined(separator: "\n"))
+        </Activities>
         </TrainingCenterDatabase>
         """
         
@@ -53,19 +55,19 @@ struct WorkoutTCXGenerator {
         let trackpoints = try await collectTrackpoints(from: workout)
         
         return """
-        <Activity Sport="\(mapActivityType(workout.workoutActivityType))">
+          <Activity Sport="\(mapActivityType(workout.workoutActivityType))">
             <Id>\(startTime)</Id>
             <Lap StartTime="\(startTime)">
-                <TotalTimeSeconds>\(workout.duration)</TotalTimeSeconds>
-                <DistanceMeters>\(workout.totalDistance?.doubleValue(for: .meter()) ?? 0)</DistanceMeters>
-                <Calories>\(Int(workout.statistics(for: HKQuantityType(.activeEnergyBurned))?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0))</Calories>
-                <Intensity>Active</Intensity>
-                <TriggerMethod>Manual</TriggerMethod>
-                <Track>
-                    \(trackpoints.map { $0.toXML() }.joined(separator: "\n"))
-                </Track>
+              <TotalTimeSeconds>\(workout.duration)</TotalTimeSeconds>
+              <DistanceMeters>\(workout.totalDistance?.doubleValue(for: .meter()) ?? 0)</DistanceMeters>
+              <Calories>\(Int(workout.statistics(for: HKQuantityType(.activeEnergyBurned))?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0))</Calories>
+              <Intensity>Active</Intensity>
+              <TriggerMethod>Manual</TriggerMethod>
+              <Track>
+        \(trackpoints.map { $0.toXML() }.joined(separator: "\n"))
+              </Track>
             </Lap>
-        </Activity>
+          </Activity>
         """
     }
     

@@ -26,48 +26,46 @@ enum TrackPoint {
     
     func toXML() -> String {
         var result = """
-            <Trackpoint>
+              <Trackpoint>
                 <Time>\(timestamp.formatted(dateTimeFormatter))</Time>
         """
         
         switch self {
         case .heartRate(_, let value):
             result += """
-                
-                <HeartRateBpm>
-                    <Value>\(value)</Value>
-                </HeartRateBpm>
+            
+                    <HeartRateBpm>
+                      <Value>\(value)</Value>
+                    </HeartRateBpm>
             """
         case .distance(_, let value, let endTime):
             result += """
                 
-                <DistanceMeters>\(value)</DistanceMeters>
+                    <DistanceMeters>\(value)</DistanceMeters>
             """
             
             if let endTime = endTime {
                 result += """
                 
-                <Extensions>
-                    <ldn:EndTime>\(endTime.formatted(dateTimeFormatter))</ldn:EndTime>
-                </Extensions>
+                        <Extensions>
+                          <ldn:EndTime>\(endTime.formatted(dateTimeFormatter))</ldn:EndTime>
+                        </Extensions>
                 """
             }
         case .position(_, let location):
             result += """
                 
-                <Position>
-                    <LatitudeDegrees>\(location.coordinate.latitude)</LatitudeDegrees>
-                    <LongitudeDegrees>\(location.coordinate.longitude)</LongitudeDegrees>
-                </Position>
-                <AltitudeMeters>
-                  \(location.altitude)
-                </AltitudeMeters>
+                    <Position>
+                      <LatitudeDegrees>\(location.coordinate.latitude)</LatitudeDegrees>
+                      <LongitudeDegrees>\(location.coordinate.longitude)</LongitudeDegrees>
+                    </Position>
+                    <AltitudeMeters>\(location.altitude)</AltitudeMeters>
             """
         }
         
         result += """
             
-            </Trackpoint>
+              </Trackpoint>
         """
         
         return result
