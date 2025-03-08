@@ -24,7 +24,8 @@ struct WorkoutTCXGenerator {
         
         let xmlString = """
         <?xml version="1.0" encoding="UTF-8"?>
-        <TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2">
+        <TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" 
+                              xmlns:ldn="https://limulus.net/xmlschemas/tcx-extensions/v1">
             <Activities>
                 \(activitiesXml.joined(separator: "\n"))
             </Activities>
@@ -87,9 +88,10 @@ struct WorkoutTCXGenerator {
                 
                 for sample in samples {
                     let timestamp = sample.startDate
+                    let endTime = sample.endDate
                     let distance = sample.quantity.doubleValue(for: .meter())
                     
-                    let trackpoint = TrackPoint.distance(timestamp: timestamp, value: distance)
+                    let trackpoint = TrackPoint.distance(timestamp: timestamp, value: distance, endTime: endTime)
                     trackpoints.append(trackpoint)
                 }
             }
