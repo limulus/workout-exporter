@@ -23,16 +23,20 @@ struct WorkoutExporterView: View {
                 showWorkoutChooserSheet = true
             }.padding()
         }
-        .sheet(isPresented: $showWorkoutChooserSheet) {
-            WorkoutChooserView { workout in
-                Task {
-                    do {
-                        try await viewModel.handleWorkoutSelection(workout)
-                        showWorkoutChooserSheet = false
-                    } catch (let err) {
-                        self.error = err
-                    }
+        .sheet(isPresented: $showWorkoutChooserSheet, onDismiss: {
+            Task {
+                do {
+                    try await viewModel.processSelectedWorkout()
+                } catch (let err) {
+                    self.error = err
+                    showErrorAlert = true
                 }
+            }
+        }) {
+            WorkoutChooserView { workout in
+                // Just store the workout and dismiss the sheet
+                viewModel.selectedWorkout = workout
+                showWorkoutChooserSheet = false
             }
         }
         .alert("Error", isPresented: $showErrorAlert) {

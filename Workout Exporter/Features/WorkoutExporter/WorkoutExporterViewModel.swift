@@ -9,7 +9,17 @@ import Foundation
 import HealthKit
 
 class WorkoutExporterViewModel: ObservableObject {
-    func handleWorkoutSelection(_ workout: HKWorkout) async throws {
+    @MainActor @Published var selectedWorkout: HKWorkout?
+    
+    func processSelectedWorkout() async throws {
+        guard let workout = await selectedWorkout else {
+            return
+        }
+        
         try ExportStore.shared.saveExport(try await .fromHealthKitWorkouts([workout]))
+        
+        await MainActor.run {
+            self.selectedWorkout = nil
+        }
     }
 }
