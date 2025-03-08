@@ -13,7 +13,7 @@ let dateTimeFormatter = Date.ISO8601FormatStyle.iso8601.year().month().day().tim
 enum TrackPoint {
     case heartRate(timestamp: Date, value: Int)
     case distance(timestamp: Date, value: Double, endTime: Date?)
-    case position(timestamp: Date, coordinate: CLLocationCoordinate2D)
+    case position(timestamp: Date, location: CLLocation)
     
     var timestamp: Date {
         switch self {
@@ -52,13 +52,16 @@ enum TrackPoint {
                 </Extensions>
                 """
             }
-        case .position(_, let coordinate):
+        case .position(_, let location):
             result += """
                 
                 <Position>
-                    <LatitudeDegrees>\(coordinate.latitude)</LatitudeDegrees>
-                    <LongitudeDegrees>\(coordinate.longitude)</LongitudeDegrees>
+                    <LatitudeDegrees>\(location.coordinate.latitude)</LatitudeDegrees>
+                    <LongitudeDegrees>\(location.coordinate.longitude)</LongitudeDegrees>
                 </Position>
+                <AltitudeMeters>
+                  \(location.altitude)
+                </AltitudeMeters>
             """
         }
         

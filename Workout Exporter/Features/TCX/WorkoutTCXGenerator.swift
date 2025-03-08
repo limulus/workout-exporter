@@ -103,7 +103,7 @@ struct WorkoutTCXGenerator {
         print("locations: \(locations)")
         
         for location in locations {
-            let trackpoint = TrackPoint.position(timestamp: location.timestamp, coordinate: location.coordinate)
+            let trackpoint = TrackPoint.position(timestamp: location.timestamp, location: location)
             trackpoints.append(trackpoint)
         }
         
