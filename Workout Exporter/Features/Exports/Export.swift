@@ -31,7 +31,7 @@ struct Export: Identifiable, Codable {
             status: .completed,
             workoutIds: workouts.map(\.uuid),
             date: Date(),
-            data: try await TCXConverter.shared.convertWorkouts(workouts)
+            data: try await WorkoutTCXGenerator.shared.convertWorkouts(workouts)
         )
     }
     

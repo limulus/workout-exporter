@@ -122,6 +122,3 @@ struct WorkoutTCXGenerator {
         }
     }
 }
-
-// Keep old name for backward compatibility
-typealias TCXConverter = WorkoutTCXGenerator
