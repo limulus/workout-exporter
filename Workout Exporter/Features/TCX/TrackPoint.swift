@@ -60,6 +60,14 @@ enum TrackPoint {
                       <LongitudeDegrees>\(location.coordinate.longitude)</LongitudeDegrees>
                     </Position>
                     <AltitudeMeters>\(location.altitude)</AltitudeMeters>
+                    <Extensions>
+                      <ldn:SpeedMetersSec>\(location.speed)</ldn:SpeedMetersSec>
+                      <ldn:CourseDegrees>\(location.course)</ldn:CourseDegrees>
+                      <ldn:HorizontalAccuracyMeters>\(location.horizontalAccuracy)</ldn:HorizontalAccuracyMeters>
+                      <ldn:VerticalAccuracyMeters>\(location.verticalAccuracy)</ldn:VerticalAccuracyMeters>
+                      <ldn:SpeedAccuracyMetersSec>\(location.speedAccuracy)</ldn:SpeedAccuracyMetersSec>
+                      <ldn:CourseAccuracyDegrees>\(location.courseAccuracy)</ldn:CourseAccuracyDegrees>
+                    </Extensions>
             """
         }
         

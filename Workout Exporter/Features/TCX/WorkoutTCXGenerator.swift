@@ -29,7 +29,7 @@ struct WorkoutTCXGenerator {
           xmlns:ldn="https://limulus.net/xmlschemas/tcx-extensions/v1"
         >
         <Activities>
-          \(activitiesXml.joined(separator: "\n"))
+        \(activitiesXml.joined(separator: "\n"))
         </Activities>
         </TrainingCenterDatabase>
         """
