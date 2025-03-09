@@ -26,7 +26,7 @@ struct WorkoutTCXGenerator {
         <?xml version="1.0" encoding="UTF-8"?>
         <TrainingCenterDatabase
           xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" 
-          xmlns:ldn="https://limulus.net/xmlschemas/tcx-extensions/v1"
+          xmlns:ldn="https://limulus.net/xsd/tcx/v1"
         >
         <Activities>
         \(activitiesXml.joined(separator: "\n"))

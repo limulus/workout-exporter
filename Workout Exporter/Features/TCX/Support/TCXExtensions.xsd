@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns="https://limulus.net/xmlschemas/tcx-extensions/v1"
-           xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="https://limulus.net/xmlschemas/tcx-extensions/v1"
-           elementFormDefault="qualified">
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema
+  xmlns="https://limulus.net/xsd/tcx/v1"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="https://limulus.net/xsd/tcx/v1"
+  elementFormDefault="qualified"
+>
 
   <xsd:annotation>
     <xsd:documentation>
@@ -32,7 +34,8 @@
   <xsd:element name="CourseDegrees" type="xsd:double">
     <xsd:annotation>
       <xsd:documentation>
-        Heading in degrees relative to true north, where 0 is north, 90 is east, 180 is south, and 270 is west.
+        Heading in degrees relative to true north, where 0 is north, 90 is east, 180 is
+        south, and 270 is west.
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
@@ -74,16 +77,16 @@
     <xsd:choice>
       <xsd:sequence>
         <!-- Distance trackpoint extensions -->
-        <xsd:element ref="EndTime" minOccurs="0"/>
+        <xsd:element ref="EndTime" minOccurs="0" />
       </xsd:sequence>
       <xsd:sequence>
         <!-- Position trackpoint extensions -->
-        <xsd:element ref="SpeedMetersSec" minOccurs="0"/>
-        <xsd:element ref="CourseDegrees" minOccurs="0"/>
-        <xsd:element ref="HorizontalAccuracyMeters" minOccurs="0"/>
-        <xsd:element ref="VerticalAccuracyMeters" minOccurs="0"/>
-        <xsd:element ref="SpeedAccuracyMetersSec" minOccurs="0"/>
-        <xsd:element ref="CourseAccuracyDegrees" minOccurs="0"/>
+        <xsd:element ref="SpeedMetersSec" minOccurs="0" />
+        <xsd:element ref="CourseDegrees" minOccurs="0" />
+        <xsd:element ref="HorizontalAccuracyMeters" minOccurs="0" />
+        <xsd:element ref="VerticalAccuracyMeters" minOccurs="0" />
+        <xsd:element ref="SpeedAccuracyMetersSec" minOccurs="0" />
+        <xsd:element ref="CourseAccuracyDegrees" minOccurs="0" />
       </xsd:sequence>
     </xsd:choice>
   </xsd:group>
