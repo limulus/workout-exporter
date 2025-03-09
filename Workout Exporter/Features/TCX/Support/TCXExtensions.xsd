@@ -7,7 +7,7 @@
   <xsd:annotation>
     <xsd:documentation>
       This schema defines extensions to the Garmin Training Center Database format
-      for additional data from CoreLocation.
+      for additional data from HealthKit/CoreLocation.
     </xsd:documentation>
   </xsd:annotation>
 
@@ -70,7 +70,7 @@
   </xsd:element>
 
   <!-- Extension groups -->
-  <xsd:group name="TrackpointExtensions">
+  <xsd:group name="TrackPointExtensions">
     <xsd:choice>
       <xsd:sequence>
         <!-- Distance trackpoint extensions -->
