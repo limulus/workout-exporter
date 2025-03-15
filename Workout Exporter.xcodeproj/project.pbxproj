@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		07B0B4FB2D85EBAF00D59494 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 07B0B4FA2D85EBAF00D59494 /* README.md */; };
+		07B0B5592D86045300D59494 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 07B0B5582D86045300D59494 /* LICENSE */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0713462C2D61384600376351 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -28,6 +33,8 @@
 		0713462B2D61384600376351 /* Workout ExporterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Workout ExporterTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		071346352D61384600376351 /* Workout ExporterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Workout ExporterUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0781077B2D73553300A2E980 /* CLAUDE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CLAUDE.md; sourceTree = "<group>"; };
+		07B0B4FA2D85EBAF00D59494 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		07B0B5582D86045300D59494 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -81,6 +88,8 @@
 				071346382D61384600376351 /* Workout ExporterUITests */,
 				0713461C2D61384500376351 /* Products */,
 				0781077B2D73553300A2E980 /* CLAUDE.md */,
+				07B0B4FA2D85EBAF00D59494 /* README.md */,
+				07B0B5582D86045300D59494 /* LICENSE */,
 			);
 			sourceTree = "<group>";
 		};
@@ -214,6 +223,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07B0B5592D86045300D59494 /* LICENSE in Resources */,
+				07B0B4FB2D85EBAF00D59494 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
