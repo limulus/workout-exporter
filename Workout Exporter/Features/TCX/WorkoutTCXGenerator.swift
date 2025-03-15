@@ -73,6 +73,7 @@ struct WorkoutTCXGenerator {
     
     private func collectTrackpoints(from workout: HKWorkout) async throws -> [TrackPoint] {
         var trackpoints: [TrackPoint] = []
+        var cumulativeDistance: Double = 0.0
         
         // Process all activities in the workout
         for activity in workout.workoutActivities {
@@ -91,9 +92,9 @@ struct WorkoutTCXGenerator {
                 for sample in samples {
                     let timestamp = sample.startDate
                     let endTime = sample.endDate
-                    let distance = sample.quantity.doubleValue(for: .meter())
-                    
-                    let trackpoint = TrackPoint.distance(timestamp: timestamp, value: distance, endTime: endTime)
+                    let segmentDistance = sample.quantity.doubleValue(for: .meter())
+                    cumulativeDistance += segmentDistance
+                    let trackpoint = TrackPoint.distance(timestamp: timestamp, value: cumulativeDistance, endTime: endTime)
                     trackpoints.append(trackpoint)
                 }
             }
